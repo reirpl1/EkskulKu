@@ -1,7 +1,18 @@
 import Link from "next/link";
 import { JAM_SESI, pendaftar } from "@/data/ekskul";
 
-export default function KartuEkskul({ item }: { item: any }) {
+// Definisikan tipe data item eskul secara lengkap agar tidak error
+interface ItemEkskul {
+  id: number;
+  nama: string;
+  hari: string;
+  sesi: number;
+  kuota: number;
+  kategori: string;
+  pembina: string;
+}
+
+export default function KartuEkskul({ item }: { item: ItemEkskul }) {
   const jumlahPendaftar = pendaftar.filter(
     (p) => p.ekskulId === item.id,
   ).length;

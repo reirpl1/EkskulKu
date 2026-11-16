@@ -1,6 +1,17 @@
 import { JAM_SESI, pendaftar } from "@/data/ekskul";
 
-export default function DetailEkskulCard({ ekskul }: { ekskul: any }) {
+// Definisikan tipe data secara lengkap agar 'kategori', 'pembina', dan properti lainnya dikenali
+interface EkskulType {
+  id: number;
+  nama: string;
+  hari: string;
+  sesi: number;
+  kuota: number;
+  kategori: string;
+  pembina: string;
+}
+
+export default function DetailEkskulCard({ ekskul }: { ekskul: EkskulType }) {
   const jumlahPendaftar = pendaftar.filter(
     (p) => p.ekskulId === ekskul.id,
   ).length;

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { ekskul, pendaftar, tambahPendaftar } from "@/data/ekskul";
 import { ambilEkskul } from "@/data/ambil";
 
-export async function daftarEkskulAction(prevState: any, fromData: FormData) {
+export async function daftarEkskulAction(prevState: unknown, fromData: FormData) {
   const ekskulIdStr = fromData.get("ekskulId") as string;
   const nama = (fromData.get("nama") as string)?.trim();
   const kelas = (fromData.get("kelas") as string)?.trim();
