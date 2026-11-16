@@ -5,7 +5,10 @@ import { revalidatePath } from "next/cache";
 import { ekskul, pendaftar, tambahPendaftar } from "@/data/ekskul";
 import { ambilEkskul } from "@/data/ambil";
 
-export async function daftarEkskulAction(prevState: unknown, fromData: FormData) {
+export async function daftarEkskulAction(
+  prevState: unknown,
+  fromData: FormData,
+) {
   const ekskulIdStr = fromData.get("ekskulId") as string;
   const nama = (fromData.get("nama") as string)?.trim();
   const kelas = (fromData.get("kelas") as string)?.trim();
@@ -13,7 +16,7 @@ export async function daftarEkskulAction(prevState: unknown, fromData: FormData)
   const ekskulId = Number(ekskulIdStr);
   const errors: Record<string, string> = {};
 
-  // validasi kolom minimal 3 huruf / karakter ya
+  // 1. Validasi kolom minimal 3 huruf / karakter
   if (!nama || nama.length < 3) {
     errors.nama = "Nama minimal 3 huruf.";
   }
@@ -65,13 +68,23 @@ export async function daftarEkskulAction(prevState: unknown, fromData: FormData)
     };
   }
 
-  // 5. Cek Bentrok Jadwal (Hari dan Sesi yang sama dengan ekskul lain)
+  // --- BONUS: Cek Batas Maksimal Mengikuti 2 Eskul ---
   const ekskulDiikutiMurid = pendaftar.filter(
     (p) =>
       p.nama.toLowerCase() === nama.toLowerCase() &&
       p.kelas.toLowerCase() === kelas.toLowerCase(),
   );
 
+  if (ekskulDiikutiMurid.length >= 2) {
+    return {
+      success: false,
+      inputs: { nama, kelas },
+      message: `Maaf, ${nama} (${kelas}) sudah mengikuti 2 ekstrakurikuler (batas maksimal).`,
+    };
+  }
+  // --------------------------------------------------
+
+  // 5. Cek Bentrok Jadwal (Hari dan Sesi yang sama dengan ekskul lain)
   for (const p of ekskulDiikutiMurid) {
     const eLain = ekskul.find((e) => e.id === p.ekskulId);
     if (
@@ -102,6 +115,7 @@ export async function daftarEkskulAction(prevState: unknown, fromData: FormData)
   // Revalidate agar halaman dan daftar ekskul langsung berubah tanpa F5
   revalidatePath(`/ekskul/${ekskulId}`);
   revalidatePath("/ekskul");
+  revalidatePath("/saya");
 
   const jamSesiTeks = targetEkskul.sesi === 1 ? "15.00–16.30" : "16.30–18.00";
 
